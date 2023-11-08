@@ -16,14 +16,15 @@ public class CustomerSpecs {
     }
 
     public List<Customer> findCustomersByCreatedAtAndSales(){
-        Double amount = 200.0;
+        double amount = 200.0;
         return customerRepository.findAll(
                 isLongTermCustomer().or(hasSalesOfMoreThan(amount))
         );
     }
 
     public void deleteCustomersByAge(){
-
+        int age = 18;
+        customerRepository.delete(ageLessThanOrEqualTo(age));
     }
 
     private Specification<Customer> isLongTermCustomer(){
@@ -33,8 +34,13 @@ public class CustomerSpecs {
         };
     }
 
-    private Specification<Customer> hasSalesOfMoreThan(Double value){
+    private Specification<Customer> hasSalesOfMoreThan(double value){
         return (root, query, builder) ->
                 builder.greaterThan(root.get("sales"), value);
+    }
+
+    private Specification<Customer> ageLessThanOrEqualTo(int age){
+        return (root, query, builder) ->
+                builder.lessThanOrEqualTo(root.get("age"), 18);
     }
 }
