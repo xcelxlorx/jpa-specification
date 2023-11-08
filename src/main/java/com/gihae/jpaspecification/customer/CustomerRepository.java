@@ -1,6 +1,5 @@
 package com.gihae.jpaspecification.customer;
 
-import com.gihae.jpaspecification.customer.Customer;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
