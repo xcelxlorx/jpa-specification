@@ -22,15 +22,19 @@ public class CustomerSpecs {
         );
     }
 
+    public void deleteCustomersByAge(){
+
+    }
+
     private Specification<Customer> isLongTermCustomer(){
         return (root, query, builder) -> {
             LocalDate date = LocalDate.now().minusYears(2);
-            return builder.lessThan(root.get(Customer.createdAt), date);
+            return builder.lessThan(root.get("createdAt"), date);
         };
     }
 
     private Specification<Customer> hasSalesOfMoreThan(Double value){
         return (root, query, builder) ->
-                builder.greaterThan(root.get(String.valueOf(Customer.sales)), value);
+                builder.greaterThan(root.get("sales"), value);
     }
 }

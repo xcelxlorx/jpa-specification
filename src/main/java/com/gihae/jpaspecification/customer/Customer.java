@@ -16,7 +16,9 @@ public class Customer {
     Long id;
 
     @ColumnDefault("now()")
-    static String createdAt;
+    String createdAt;
 
-    static Double sales;
+    Double sales;
+
+    Integer age;
 }
