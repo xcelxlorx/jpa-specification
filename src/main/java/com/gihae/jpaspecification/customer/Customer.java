@@ -16,5 +16,5 @@ public class Customer {
     Long id;
 
     @ColumnDefault("now()")
-    String createdAt;
+    static String createdAt;
 }
