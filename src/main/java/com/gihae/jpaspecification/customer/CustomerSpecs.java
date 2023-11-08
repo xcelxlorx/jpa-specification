@@ -22,14 +22,14 @@ public class CustomerSpecs {
         );
     }
 
-    public Specification<Customer> isLongTermCustomer(){
+    private Specification<Customer> isLongTermCustomer(){
         return (root, query, builder) -> {
             LocalDate date = LocalDate.now().minusYears(2);
             return builder.lessThan(root.get(Customer.createdAt), date);
         };
     }
 
-    public Specification<Customer> hasSalesOfMoreThan(Double value){
+    private Specification<Customer> hasSalesOfMoreThan(Double value){
         return (root, query, builder) ->
                 builder.greaterThan(root.get(String.valueOf(Customer.sales)), value);
     }
