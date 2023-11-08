@@ -1,4 +1,4 @@
-package com.gihae.jpaspecification;
+package com.gihae.jpaspecification.customer;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
