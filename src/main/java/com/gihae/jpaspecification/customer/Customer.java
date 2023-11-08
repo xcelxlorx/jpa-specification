@@ -17,4 +17,6 @@ public class Customer {
 
     @ColumnDefault("now()")
     static String createdAt;
+
+    static Double sales;
 }
