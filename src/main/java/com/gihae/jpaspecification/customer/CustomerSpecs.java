@@ -11,8 +11,15 @@ public class CustomerSpecs {
 
     private final CustomerRepository customerRepository;
 
-    public List<Customer> getCustomers(){
+    public List<Customer> findCustomersByCreatedAt(){
         return customerRepository.findAll(isLongTermCustomer());
+    }
+
+    public List<Customer> findCustomersByCreatedAtAndSales(){
+        Double amount = 200.0;
+        return customerRepository.findAll(
+                isLongTermCustomer().or(hasSalesOfMoreThan(amount))
+        );
     }
 
     public Specification<Customer> isLongTermCustomer(){
@@ -20,5 +27,10 @@ public class CustomerSpecs {
             LocalDate date = LocalDate.now().minusYears(2);
             return builder.lessThan(root.get(Customer.createdAt), date);
         };
+    }
+
+    public Specification<Customer> hasSalesOfMoreThan(Double value){
+        return (root, query, builder) ->
+                builder.greaterThan(root.get(String.valueOf(Customer.sales)), value);
     }
 }
