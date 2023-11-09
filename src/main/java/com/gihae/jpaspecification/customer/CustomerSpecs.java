@@ -29,6 +29,12 @@ public class CustomerSpecs {
         customerRepository.delete(ageLessThanOrEqualTo(age));
     }
 
+    public List<Customer> findCustomers(String start, String end, String status){
+        Specification<Customer> spec = Specification.where(createdAtBetween(start, end))
+                .and(statusEqual(status));
+        return customerRepository.findAll(spec);
+    }
+
     private Specification<Customer> isLongTermCustomer(){
         return (root, query, builder) -> {
             LocalDate date = LocalDate.now().minusYears(2);
