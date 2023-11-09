@@ -54,4 +54,12 @@ public class CustomerSpecs {
             return criteriaBuilder.between(root.get("startTime"), startDate, endDate);
         };
     }
+
+    public static Specification<Customer> statusEqual(String status) {
+        return (root, query, criteriaBuilder) -> switch (status) {
+            case "true" -> criteriaBuilder.equal(root.get("status"), true);
+            case "false" -> criteriaBuilder.equal(root.get("status"), false);
+            default -> criteriaBuilder.conjunction();
+        };
+    }
 }
