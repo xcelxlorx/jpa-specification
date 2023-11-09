@@ -19,6 +19,6 @@ public class Customer {
     String createdAt;
 
     Double sales;
-
     Integer age;
+    Boolean status;
 }
