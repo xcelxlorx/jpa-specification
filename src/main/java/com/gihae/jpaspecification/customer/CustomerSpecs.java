@@ -41,6 +41,6 @@ public class CustomerSpecs {
 
     private Specification<Customer> ageLessThanOrEqualTo(int age){
         return (root, query, builder) ->
-                builder.lessThanOrEqualTo(root.get("age"), 18);
+                builder.lessThanOrEqualTo(root.get("age"), age);
     }
 }
