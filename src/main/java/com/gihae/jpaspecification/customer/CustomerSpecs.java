@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -42,5 +44,14 @@ public class CustomerSpecs {
     private Specification<Customer> ageLessThanOrEqualTo(int age){
         return (root, query, builder) ->
                 builder.lessThanOrEqualTo(root.get("age"), age);
+    }
+
+    private Specification<Customer> createdAtBetween(String start, String end) {
+        return (root, query, criteriaBuilder) -> {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            LocalDateTime startDate = start == null ? LocalDateTime.now().minusMonths(3) : LocalDate.parse(start, formatter).atStartOfDay();
+            LocalDateTime endDate = LocalDate.parse(end, formatter).plusDays(1).atStartOfDay();
+            return criteriaBuilder.between(root.get("startTime"), startDate, endDate);
+        };
     }
 }
