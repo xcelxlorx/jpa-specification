@@ -1,5 +1,7 @@
 package com.gihae.jpaspecification.customer;
 
+import com.gihae.jpaspecification.product.Product;
+import jakarta.persistence.criteria.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -29,9 +31,10 @@ public class CustomerSpecs {
         customerRepository.delete(ageLessThanOrEqualTo(age));
     }
 
-    public List<Customer> findCustomers(String start, String end, String status){
+    public List<Customer> findCustomers(Long customerId, String start, String end, String status){
         Specification<Customer> spec = Specification.where(createdAtBetween(start, end))
-                .and(statusEqual(status));
+                .and(statusEqual(status))
+                .and(conditionEqual(customerId));
         return customerRepository.findAll(spec);
     }
 
@@ -53,19 +56,36 @@ public class CustomerSpecs {
     }
 
     private Specification<Customer> createdAtBetween(String start, String end) {
-        return (root, query, criteriaBuilder) -> {
+        return (root, query, builder) -> {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
             LocalDateTime startDate = start == null ? LocalDateTime.now().minusMonths(3) : LocalDate.parse(start, formatter).atStartOfDay();
             LocalDateTime endDate = LocalDate.parse(end, formatter).plusDays(1).atStartOfDay();
-            return criteriaBuilder.between(root.get("startTime"), startDate, endDate);
+            return builder.between(root.get("startTime"), startDate, endDate);
         };
     }
 
     public static Specification<Customer> statusEqual(String status) {
-        return (root, query, criteriaBuilder) -> switch (status) {
-            case "true" -> criteriaBuilder.equal(root.get("status"), true);
-            case "false" -> criteriaBuilder.equal(root.get("status"), false);
-            default -> criteriaBuilder.conjunction();
+        return (root, query, builder) -> switch (status) {
+            case "true" -> builder.equal(root.get("status"), true);
+            case "false" -> builder.equal(root.get("status"), false);
+            default -> builder.conjunction();
+        };
+    }
+
+    public static Specification<Customer> conditionEqual(Long customerId) {
+        return (root, query, builder) -> {
+            Subquery<Long> subquery = query.subquery(Long.class);
+            Root<Product> productRoot = subquery.from(Product.class);
+            Join<Product, Customer> productCustomerJoin = productRoot.join("customer", JoinType.INNER);
+            subquery.select(productCustomerJoin.get("id"))
+                    .where(
+                            builder.and(
+                                    builder.isTrue(productRoot.get("status")),
+                                    builder.equal(productRoot.get("customer").get("id"), customerId)
+                            )
+                    );
+
+            return root.get("id").in(subquery);
         };
     }
 }
