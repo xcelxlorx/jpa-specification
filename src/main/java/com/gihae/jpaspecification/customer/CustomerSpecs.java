@@ -1,9 +1,10 @@
 package com.gihae.jpaspecification.customer;
 
-import com.gihae.jpaspecification.product.Product;
+import com.gihae.jpaspecification.item.Item;
 import jakarta.persistence.criteria.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -11,24 +12,15 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @RequiredArgsConstructor
+@Service
 public class CustomerSpecs {
 
     private final CustomerRepository customerRepository;
 
-    public List<Customer> findCustomersByCreatedAt(){
-        return customerRepository.findAll(isLongTermCustomer());
-    }
-
-    public List<Customer> findCustomersByCreatedAtAndSales(){
-        double amount = 200.0;
+    public List<Customer> findCustomersByCreatedAtAndSales(Double amount){
         return customerRepository.findAll(
                 isLongTermCustomer().or(hasSalesOfMoreThan(amount))
         );
-    }
-
-    public void deleteCustomersByAge(){
-        int age = 18;
-        customerRepository.delete(ageLessThanOrEqualTo(age));
     }
 
     public List<Customer> findCustomers(Long customerId, String start, String end, String status){
@@ -38,6 +30,10 @@ public class CustomerSpecs {
         return customerRepository.findAll(spec);
     }
 
+    public void deleteCustomersByAge(Integer age){
+        customerRepository.delete(ageLessThanOrEqualTo(age));
+    }
+
     private Specification<Customer> isLongTermCustomer(){
         return (root, query, builder) -> {
             LocalDate date = LocalDate.now().minusYears(2);
@@ -45,12 +41,12 @@ public class CustomerSpecs {
         };
     }
 
-    private Specification<Customer> hasSalesOfMoreThan(double value){
+    private Specification<Customer> hasSalesOfMoreThan(Double value){
         return (root, query, builder) ->
                 builder.greaterThan(root.get("sales"), value);
     }
 
-    private Specification<Customer> ageLessThanOrEqualTo(int age){
+    private Specification<Customer> ageLessThanOrEqualTo(Integer age){
         return (root, query, builder) ->
                 builder.lessThanOrEqualTo(root.get("age"), age);
     }
@@ -75,8 +71,8 @@ public class CustomerSpecs {
     public static Specification<Customer> conditionEqual(Long customerId) {
         return (root, query, builder) -> {
             Subquery<Long> subquery = query.subquery(Long.class);
-            Root<Product> productRoot = subquery.from(Product.class);
-            Join<Product, Customer> productCustomerJoin = productRoot.join("customer", JoinType.INNER);
+            Root<Item> productRoot = subquery.from(Item.class);
+            Join<Item, Customer> productCustomerJoin = productRoot.join("customer", JoinType.INNER);
             subquery.select(productCustomerJoin.get("id"))
                     .where(
                             builder.and(
