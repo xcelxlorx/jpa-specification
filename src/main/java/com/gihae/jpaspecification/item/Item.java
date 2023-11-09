@@ -1,4 +1,4 @@
-package com.gihae.jpaspecification.product;
+package com.gihae.jpaspecification.item;
 
 import com.gihae.jpaspecification.customer.Customer;
 import jakarta.persistence.*;
@@ -6,7 +6,7 @@ import lombok.Getter;
 
 @Getter
 @Entity
-public class Product {
+public class Item {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
